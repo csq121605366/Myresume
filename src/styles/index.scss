@@ -1,0 +1,16 @@
+@charset 'UTF-8';
+// sass的入口文件
+
+@import './components/swiper/swiper.min';	//不要后缀名可以把文件内容引入进来
+@import './components/swiper/animate.min';	//不要后缀名可以把文件内容引入进来
+@import './swiper';							
+@import './slider';
+
+// 引入iconfont	
+@import './components/iconfont/iconfont'
+
+
+
+
+
+
