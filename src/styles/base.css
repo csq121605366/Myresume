@@ -1,0 +1,69 @@
+/* 基础css */
+html,
+body {
+	position: relative;
+	height: 100%;
+	overflow: hidden;
+}
+
+body {
+	background: #eee;
+	font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	color: #333;
+	margin: 0;
+	padding: 0;
+}
+
+header {
+	width: 100%;
+	height: 45px;
+	background: #37363b;
+	color: #fff;
+	position: absolute;
+	z-index: 2;
+	left: 0;
+	top: 0;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.container{
+	height: 100%;
+	width: 100%;
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+}
+
+.swiper-container {
+	position: absolute;
+	width: 100%;
+	left: 0;
+	top: 45px;
+	height: calc(100% - 45px)!important;
+}
+.hide{
+	display: none;
+	height: 0;
+}
+header button{
+	color: white;
+	outline: none;
+	width: 60px;
+	height: 30px;
+	border-radius: 10px;
+	border: none;
+	background-color: #888;
+}
+
+button.share{
+	margin-left: 20px;
+}
+button.scan{
+	margin-right: 20px;
+}
+
+
+

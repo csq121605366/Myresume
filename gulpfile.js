@@ -1,7 +1,7 @@
 
 var gulp = require('gulp'),
-	webserver = require('gulp-webserver'),
-	url = require('url'),
+webserver = require('gulp-webserver'),
+url = require('url'),
 	fs = require('fs'),		// fileSystem
 	sass = require('gulp-sass'),
 	imagemin = require('gulp-imagemin'),
@@ -16,7 +16,8 @@ var gulp = require('gulp'),
 	webpack = require('gulp-webpack'),
 	// 命名模块
 	named =require('vinyl-named'),
-
+	//自动前缀模块
+	autoprefixer = require('gulp-autoprefixer'),
 	// 版本模块
 	rev = require('gulp-rev'),
 	// 版本控制模块
@@ -30,10 +31,9 @@ var gulp = require('gulp'),
 
 // webserver
 gulp.task('webserver', function() {
-  gulp.src('./src')
-    .pipe(webserver({
+	gulp.src('./src')
+	.pipe(webserver({
       livereload: true,		//实时重载
-      directoryListing: false,	//目录清单
       open: true,
       // 实现我们的Mock数据
       // 1.用户在浏览器地址里输入url地址，比如：http://localhost/queryList
@@ -42,11 +42,11 @@ gulp.task('webserver', function() {
       // 4.读取eryList.json文件，并将这个文件的内容写到我们的浏览器上
       middleware: function(req, res, next){
       	var urlObj = url.parse(req.url, true),
-      		method = req.method;
+      	method = req.method;
       	switch(urlObj.pathname){
       		case '/api/skill':
       			// 设置的头信息
-	      		res.setHeader('Content-Type', 'application/json');
+      			res.setHeader('Content-Type', 'application/json');
 	      		// 读取本地的json文件，并将读的信息内容设置编码，然后将内容转成data数据返回
 	      		fs.readFile('mock/skill.json', 'utf-8', function(err, data){
 	      			// res的全程是response，end是结束的意思，就是把我们的data数据渲染到浏览器上
@@ -54,42 +54,52 @@ gulp.task('webserver', function() {
 	      		});
 	      		return;
 
-	      	case '/api/project':
+	      		case '/api/project':
 	      		res.setHeader('Content-Type', 'application/json');
 	      		fs.readFile('mock/project.json', 'utf-8', function(err, data){
 	      			res.end(data);
 	      		});
 	      		return;
 
-	      	case '/api/product':
+	      		case '/api/product':
 	      		res.setHeader('Content-Type', 'application/json');
 	      		fs.readFile('mock/product.json', 'utf-8', function(err, data){
 	      			res.end(data);
 	      		});
 	      		return;
 
-	      	case '/api/work':
+	      		case '/api/work':
 	      		res.setHeader('Content-Type', 'application/json');
 	      		fs.readFile('mock/work.json', 'utf-8', function(err, data){
 	      			res.end(data);
 	      		});
 	      		return;
 
-	      	default: ;
-      	}
+	      		default: ;
+	      	}
 
       	next();		// 这行代码非常重要，next解决的是循环遍历操作
 
       } // end middleware
 
-    }));
+  }));
 });
 
 // 将sass进行转换
 gulp.task('sass', function(){
 	return gulp.src('./src/styles/index.scss')
-			   .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
-			   .pipe(gulp.dest('./src/css'));
+	.pipe(sass().on('error', sass.logError))
+	.pipe(gulp.dest('./src/css'))
+});
+
+gulp.task('autoprefix',["sass"], function(){
+	return gulp.src('./src/styles/index.css')
+	.pipe(autoprefixer({
+	 	browsers: ['last 4 versions','Android >= 3.2'],
+	 	cascade: true,
+	 	remove:true 
+	 }))
+	.pipe(gulp.dest('./src/css'))
 })
 
 
@@ -99,19 +109,19 @@ var jsFiles = ['src/scripts/index.js'];
 // 打包js
 gulp.task('packjs', function(){
 	return gulp.src(jsFiles)
-			   .pipe(named())
-			   .pipe(webpack())
-			   // .pipe(uglify())
-			   .pipe(gulp.dest('./src/js'));
+	.pipe(named())
+	.pipe(webpack())
+	// .pipe(uglify())
+	.pipe(gulp.dest('./src/js'));
 })
 
 gulp.task("watch",function () {
-	gulp.watch("./src/styles/*.*",["sass"]);
-	gulp.watch("./src/styles/*.*",["packjs"]);
+	gulp.watch("./src/styles/**/*.*",["sass"]);
+	gulp.watch("./src/scripts/index.js",["packjs"]);
 })
 
 
-gulp.task("default",["sass","packjs","webserver","watch"],function () {
+gulp.task("default",["autoprefix","packjs","webserver","watch"],function () {
 	console.log("ok")
 })
 
@@ -123,10 +133,10 @@ gulp.task("default",["sass","packjs","webserver","watch"],function () {
 
 // --------------版本控制------------------
 var cssDistFiles = ['www/css/index.css'],
-	jsDistFiles = ['www/js/index.js'];
+jsDistFiles = ['www/js/index.js'];
 
 // css的ver控制
-gulp.task('verCss', function(){
+gulp.task('verCss',["copy-css"], function(){
 	return gulp.src(cssDistFiles)
 			   // 生成一个版本
 			   .pipe(rev())
@@ -136,10 +146,10 @@ gulp.task('verCss', function(){
 			   .pipe(rev.manifest())
 			   // 将映射文件输出到指定的目录
 			   .pipe(gulp.dest('www/ver/css'));
-})
+			})
 
 // js的ver控制
-gulp.task('verJs', function(){
+gulp.task('verJs',["copy-js"], function(){
 	return gulp.src(jsDistFiles)
 			   // 生成一个版本
 			   .pipe(rev())
@@ -149,13 +159,13 @@ gulp.task('verJs', function(){
 			   .pipe(rev.manifest())
 			   // 将映射文件输出到指定的目录
 			   .pipe(gulp.dest('www/ver/js'));
-})
+			})
 
 // 对html文件的版本内容的替换
-gulp.task('html', function(){
+gulp.task('html',["copy-index","verCss","verJs"], function(){
 	return gulp.src(['www/ver/**/*.json', 'www/*.html'])
-			   .pipe(revCollector({replaceReved: true}))
-			   .pipe(gulp.dest('www'))
+	.pipe(revCollector({replaceReved: true}))
+	.pipe(gulp.dest('www'))
 })
 
 // 设置监控
@@ -174,26 +184,29 @@ gulp.task('html', function(){
 // })
 
 // 设置默认任务
-gulp.task('end', ['copy-json', 'copy-img', 'watch', 'webserver'], function(){
+gulp.task('end', ['copy-img','copy-index',"html"], function(){
 
 })
 
 
 // 复制
-gulp.task('copy-json', function(){
-	return gulp.src('./mock/*.json')
-			   .pipe(gulp.dest('./www/mock'));
-})
 gulp.task('copy-index', function(){
 	return gulp.src('./src/**/**.html')
-			   .pipe(gulp.dest('./www'));
+	.pipe(gulp.dest('./www'));
 })
 gulp.task('copy-img', function(){
 	return gulp.src('./src/images/**')
-		 	   .pipe(imagemin())
-		 	   .pipe(gulp.dest('./www/images'));
+	.pipe(imagemin())
+	.pipe(gulp.dest('./www/images'));
 })		 	   
-
+gulp.task('copy-css', function(){
+	return gulp.src('./src/css/*.css')
+	.pipe(gulp.dest('./www/css/'));
+})		 	   
+gulp.task('copy-js', function(){
+	return gulp.src('./src/js/*.js')
+	.pipe(gulp.dest('./www/js/'));
+})	
 
 
 
