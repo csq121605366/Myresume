@@ -51,28 +51,28 @@ gulp.task('webserver', function() {
 	      		fs.readFile('mock/skill.json', 'utf-8', function(err, data){
 	      			// res的全程是response，end是结束的意思，就是把我们的data数据渲染到浏览器上
 	      			res.end(data);
-	      		});
+	      			});
 	      		return;
 
 	      		case '/api/project':
 	      		res.setHeader('Content-Type', 'application/json');
 	      		fs.readFile('mock/project.json', 'utf-8', function(err, data){
 	      			res.end(data);
-	      		});
+	      			});
 	      		return;
 
 	      		case '/api/product':
 	      		res.setHeader('Content-Type', 'application/json');
 	      		fs.readFile('mock/product.json', 'utf-8', function(err, data){
 	      			res.end(data);
-	      		});
+	      			});
 	      		return;
 
 	      		case '/api/work':
 	      		res.setHeader('Content-Type', 'application/json');
 	      		fs.readFile('mock/work.json', 'utf-8', function(err, data){
 	      			res.end(data);
-	      		});
+	      			});
 	      		return;
 
 	      		default: ;
@@ -82,25 +82,25 @@ gulp.task('webserver', function() {
 
       } // end middleware
 
-  }));
-});
+      }));
+	});
 
 // 将sass进行转换
 gulp.task('sass', function(){
 	return gulp.src('./src/styles/index.scss')
 	.pipe(sass().on('error', sass.logError))
 	.pipe(gulp.dest('./src/css'))
-});
+	});
 
 gulp.task('autoprefix',["sass"], function(){
 	return gulp.src('./src/styles/index.css')
 	.pipe(autoprefixer({
-	 	browsers: ['last 4 versions','Android >= 3.2'],
-	 	cascade: true,
-	 	remove:true 
-	 }))
+		browsers: ['last 4 versions','Android >= 3.2'],
+		cascade: true,
+		remove:true 
+		}))
 	.pipe(gulp.dest('./src/css'))
-})
+	})
 
 
 // ------------js模块化管理----------------
@@ -113,17 +113,17 @@ gulp.task('packjs', function(){
 	.pipe(webpack())
 	// .pipe(uglify())
 	.pipe(gulp.dest('./src/js'));
-})
+	})
 
 gulp.task("watch",function () {
-	gulp.watch("./src/styles/**/*.*",["sass"]);
+	gulp.watch("./src/styles/index.scss",["sass"]);
 	gulp.watch("./src/scripts/index.js",["packjs"]);
 })
 
 
 gulp.task("default",["autoprefix","packjs","webserver","watch"],function () {
 	console.log("ok")
-})
+	})
 
 
 /******************************************************
@@ -146,7 +146,7 @@ gulp.task('verCss',["copy-css"], function(){
 			   .pipe(rev.manifest())
 			   // 将映射文件输出到指定的目录
 			   .pipe(gulp.dest('www/ver/css'));
-			})
+			   })
 
 // js的ver控制
 gulp.task('verJs',["copy-js"], function(){
@@ -159,14 +159,14 @@ gulp.task('verJs',["copy-js"], function(){
 			   .pipe(rev.manifest())
 			   // 将映射文件输出到指定的目录
 			   .pipe(gulp.dest('www/ver/js'));
-			})
+			   })
 
 // 对html文件的版本内容的替换
 gulp.task('html',["copy-index","verCss","verJs"], function(){
 	return gulp.src(['www/ver/**/*.json', 'www/*.html'])
 	.pipe(revCollector({replaceReved: true}))
 	.pipe(gulp.dest('www'))
-})
+	})
 
 // 设置监控
 // gulp.task('watch', function(){
@@ -186,27 +186,27 @@ gulp.task('html',["copy-index","verCss","verJs"], function(){
 // 设置默认任务
 gulp.task('end', ['copy-img','copy-index',"html"], function(){
 
-})
+	})
 
 
 // 复制
 gulp.task('copy-index', function(){
 	return gulp.src('./src/**/**.html')
 	.pipe(gulp.dest('./www'));
-})
+	})
 gulp.task('copy-img', function(){
 	return gulp.src('./src/images/**')
 	.pipe(imagemin())
 	.pipe(gulp.dest('./www/images'));
-})		 	   
+	})		 	   
 gulp.task('copy-css', function(){
 	return gulp.src('./src/css/*.css')
 	.pipe(gulp.dest('./www/css/'));
-})		 	   
+	})		 	   
 gulp.task('copy-js', function(){
 	return gulp.src('./src/js/*.js')
 	.pipe(gulp.dest('./www/js/'));
-})	
+	})	
 
 
 

@@ -17,42 +17,68 @@
     <div class="container">
         <!-- 头部 -->
         <header>
-            <button class="share">   
-            分享
-            </button>
-            <button class="hide"></button>
-            <button class="scan">
-            扫一扫 
-            </button>
-        </header>
-        <!-- Swiper -->
-        <div class="swiper-container swiper-h">
-            <div class="parallax-bg" data-swiper-parallax="-23%"></div>
-            <div class="swiper-wrapper">
-                <div class="swiper-slide">
+            <div class="scan">   
+               <i class="iconfont">&#xe610;</i>
+           </div>
+           <div class="hide"></div>
+           <div class="share">
+               <i class="iconfont">&#xf003a;</i>
+               <ul class="share-list">
+                  <li class="sl-item"><i class="iconfont">&#xe644;</i>分享到朋友圈</li>
+                  <li class="sl-item"><i class="iconfont">&#xe634;</i>分享到QQ</li>
+                  <li class="sl-item"><i class="iconfont">&#xe6b3;</i>分享到QQ空间</li>
+              </ul>
+          </div>
+      </header>
+      <!-- Swiper -->
+      <div class="swiper-container swiper-h">
+        <div class="swiper-wrapper">
+            <!-- 无限滚动 -->
+            <div class="swiper-slide">
+                <div id="wrapper">
+                    <div id="scroller">
+                        <div class="pullDown">
+                            <h3>要刷新了...</h3>    
+                        </div>
+                        <ul id="add" class="list-skill"> 
 
-                </div>
-                <!-- 项目 -->
-                <div class="swiper-slide">
-                   <div class="swiper-container swiper-v">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide">Vertical Slide 1</div>
-                        <div class="swiper-slide">Vertical Slide 2</div>
+                        </ul>
+                        <div class="pullUp">
+                            <h3>要加载了...</h3>    
+                        </div>
                     </div>
-                    <div class="swiper-pagination swiper-pagination-v"></div>
                 </div>
             </div>
+            <!-- 项目 -->
             <div class="swiper-slide">
-            </div>
-            <div class="swiper-slide">
+               <div class="swiper-container swiper-v">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <h2>通威食品</h2>
+                        <p><span>类型:</span>电商网站</p>
+                        <p><span>网址:</span>http://www.tongweifood.cn/</p>
+                        <p><span>公司介绍:</span>通威食品是大型科技型上市公司通威股份重点打造的食品产业。</p>
+                        <p><span>工程介绍:</span>项目耗时3周，主要处理前端页面，当时并未要求移动端适配，故该网站只适应于PC端应用</p>
+                        <p><span>描述:</span>Html、Css2、js等</p>
+                    </div>
+                    <div class="swiper-slide">
+                        
+                    </div>
+                </div>
+                <div class="swiper-pagination swiper-pagination-v"></div>
             </div>
         </div>
-        <!-- Add Pagination -->
-        <div class="swiper-pagination swiper-pagination-white"></div>
+        <div class="swiper-slide">
+        </div>
+        <div class="swiper-slide">
+        </div>
     </div>
+    <!-- Add Pagination -->
+    <div class="swiper-pagination swiper-pagination-white"></div>
 </div>
-
-<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+</div>
+<!--<script src="//cdn.bootcss.com/jquery/1.12.1/jquery.min.js"></script>-->
+<!-- <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script> -->
 <script type="text/javascript" src="js/index.js"></script>
 </body>
 </html>

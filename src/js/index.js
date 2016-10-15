@@ -56,17 +56,21 @@
 	// js的入口文件
 	// 引入zepto-modules
 	var $ = __webpack_require__(2);
-	__webpack_require__(11);
-	module.exports = $;
+
 
 	// 引入swiper
-	var Swiper = __webpack_require__(13);
+	var Swiper = __webpack_require__(15);
 
 	//  引入swiper animate
-	var  SwiperAnimate = __webpack_require__(14);
+	var  SwiperAnimate = __webpack_require__(16);
+
 
 	// 引入Iscroll
-	var IScroll = __webpack_require__(15);
+	var IScroll = __webpack_require__(17);
+
+	//引入圆形进度条
+	__webpack_require__(18);
+
 
 	/**************************************************
 	 * 					预加载
@@ -76,6 +80,7 @@
 	 	if(document.readyState=="complete"){
 	 		clearInterval(timer);
 	 		$("#preload").hide();
+	 		iScroll();
 	 		// swiper_h.updateSlidesSize();
 	 		// swiper_h.updatePagination();	
 	 		// swiper_v.updateSlidesSize();
@@ -100,12 +105,164 @@
 	 	paginationClickable: true,    
 	 	direction: 'vertical',
 	 	loop:true,
+	 	touchRatio : 0.7,
+	 	touchAngle : 10,
 	 	paginationBulletRender: function (index, className) {
 	 		return '<span class="' + className + '"></span>';
 	 	}
 	 });
 
 
+
+
+
+
+
+	/********************************************************
+	 * 					头部+微信功能
+	 *******************************************************/
+
+	 $(".share .iconfont").on("tap",function(e){
+	 	console.log(e)
+	 	e.cancelBubble=true;
+	 	$(".share-list").toggle();
+	 })
+
+	 $("body").on("tap",function(){
+	 	$(".share-list").hide();
+	 })
+
+
+
+	// $.post("http://csq121605366.applinzi.com/getsign.php",{
+	// 	url:location.href
+	// },function (data) {
+	// 	pos=data.indexOf("}");
+	// 	dataStr=data.substring(0,pos+1);
+	// 	objData=JSON.parse(dataStr);
+	// 	console.log(dataStr);
+	// })
+
+	/********************************************************
+	 * 					skill
+	 *******************************************************/
+
+
+
+		// iscroll滚动
+		var 
+		myScroll,
+		downCount=0,
+		upCount=0,
+		loadingStep=0;
+		//加载状态0默认，1显示加载状态，2执行加载数据，只有当为0时才能再次加载，这是为了防止过快加载
+		//下拉更新
+		function pullDownAction() {
+			setTimeout(function () {
+				$(".pullDown").removeClass(".active").hide();
+				myScroll.refresh();
+				loadingStep=0;
+			},800)
+		}
+		//上拉加载
+		function pullUpAction() {
+			setTimeout(function () {
+				createItem(iData,iData+2,function () {
+					$(".pullUp").removeClass(".active").hide();
+				myScroll.refresh();
+				myScroll.scrollTo(0,myScroll.maxScrollY + 20);
+				loadingStep=0;
+				});	
+			},800)
+		}
+
+		// 初始化执行
+		function iScroll() {
+			//刷新重置
+			$(".pullDown").removeClass('active').hide();
+			$(".pullUp").removeClass('active').hide();
+			myScroll=new IScroll("#wrapper",{
+				scrollbars: true,
+				bounce:true,
+				probeType:2,
+				//probeType：1对性能没有影响。在滚动事件被触发时，滚动轴是不是忙着做它的东西。probeType：2总执行滚动，除了势头，反弹过程中的事件。这类似于原生的onscroll事件。probeType：3发出的滚动事件与到的像素精度。注意，滚动被迫requestAnimationFrame
+				scrollbars:true,
+				interactiveScrollbars:true,
+				shrinkScrollbars:'scale',
+				momentum:true// 允许有惯性滑动 
+			});
+
+			//滚动时
+			myScroll.on("scroll",function (e) {
+				if(loadingStep==0){
+				if(this.y>30){
+				//下拉刷新效果
+				$(".pullDown").addClass('active').show(300);
+				loadingStep=1;
+				myScroll.refresh();		//拉动一次
+			}else if(this.y < (this.maxScrollY - 30)){
+				//上拉加载效果
+				$(".pullUp").addClass('active').show(300);
+				loadingStep=1;
+				myScroll.refresh();
+			}
+		}
+	});
+			//滚动结束时
+			myScroll.on("scrollEnd",function () {
+				if(loadingStep==1){
+					if($(".pullDown").attr("class").match("active")){
+						$(".pullDown").removeClass("active");
+						loadingStep=2;
+						pullDownAction();
+					}else if($(".pullUp").attr("class").match("active")){
+						$(".pullUp").removeClass("active");
+						loadingStep=2;
+						pullUpAction();
+					}
+				}
+			})
+		}
+
+
+		var iData=0;
+		var aCircle=[];
+		// skill页面操作dom
+		function createItem(imin,imax,fn) {
+			//获取数据
+			$.get("./mock/skill.json",function (json) {
+				var sHtml="";
+				if(json.length<=iData){
+					navigator.vibrate(2000);//手机震动
+					alert("加载完毕");
+					return false;
+				}
+				$.each(json,function (index,obj) {
+					if(index<=imax&&index>=imin){
+						sHtml="<li class='item'><div id='circle-"+index+"' class='item-circle' class='item-circle' ><img src='"+obj.images+"'></div><div class='item-content'><h2>"+obj.name+"</h2><p>"+obj.detail+"</p></div></li>";
+						++iData;
+						$("#add").append($(sHtml));
+						var radialObj = radialIndicator('#circle-'+index+'', {
+							barColor : '#87CEEB',
+							barWidth : 10,
+							initValue : 0,
+							displayNumber: false
+						});
+						radialObj.animate(obj.percent);
+						aCircle.push(radialObj);
+					}
+				})
+				if(fn){
+					fn();//(回调函数)
+				}
+			});
+		}
+
+		createItem(0,6)
+
+
+
+	var supportsVibrate = "vibrate" in navigator;
 
 
 
@@ -123,6 +280,12 @@
 	__webpack_require__(8);
 	__webpack_require__(9);
 	__webpack_require__(10);
+	__webpack_require__(11);
+	__webpack_require__(12);
+	__webpack_require__(13);
+	__webpack_require__(14);
+
+
 
 	module.exports = $;
 
@@ -1819,18 +1982,214 @@
 /* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var $ = __webpack_require__(3);
+	//     Zepto.js
+	//     (c) 2010-2016 Thomas Fuchs
+	//     Zepto.js may be freely distributed under the MIT license.
 
-	__webpack_require__(4);
-	__webpack_require__(12);
-	__webpack_require__(5);
-	__webpack_require__(6);
+	var Zepto = __webpack_require__(3);
 
-	module.exports = $;
+	;(function($, undefined){
+	  var prefix = '', eventPrefix,
+	    vendors = { Webkit: 'webkit', Moz: '', O: 'o' },
+	    testEl = document.createElement('div'),
+	    supportedTransforms = /^((translate|rotate|scale)(X|Y|Z|3d)?|matrix(3d)?|perspective|skew(X|Y)?)$/i,
+	    transform,
+	    transitionProperty, transitionDuration, transitionTiming, transitionDelay,
+	    animationName, animationDuration, animationTiming, animationDelay,
+	    cssReset = {}
+
+	  function dasherize(str) { return str.replace(/([A-Z])/g, '-$1').toLowerCase() }
+	  function normalizeEvent(name) { return eventPrefix ? eventPrefix + name : name.toLowerCase() }
+
+	  if (testEl.style.transform === undefined) $.each(vendors, function(vendor, event){
+	    if (testEl.style[vendor + 'TransitionProperty'] !== undefined) {
+	      prefix = '-' + vendor.toLowerCase() + '-'
+	      eventPrefix = event
+	      return false
+	    }
+	  })
+
+	  transform = prefix + 'transform'
+	  cssReset[transitionProperty = prefix + 'transition-property'] =
+	  cssReset[transitionDuration = prefix + 'transition-duration'] =
+	  cssReset[transitionDelay    = prefix + 'transition-delay'] =
+	  cssReset[transitionTiming   = prefix + 'transition-timing-function'] =
+	  cssReset[animationName      = prefix + 'animation-name'] =
+	  cssReset[animationDuration  = prefix + 'animation-duration'] =
+	  cssReset[animationDelay     = prefix + 'animation-delay'] =
+	  cssReset[animationTiming    = prefix + 'animation-timing-function'] = ''
+
+	  $.fx = {
+	    off: (eventPrefix === undefined && testEl.style.transitionProperty === undefined),
+	    speeds: { _default: 400, fast: 200, slow: 600 },
+	    cssPrefix: prefix,
+	    transitionEnd: normalizeEvent('TransitionEnd'),
+	    animationEnd: normalizeEvent('AnimationEnd')
+	  }
+
+	  $.fn.animate = function(properties, duration, ease, callback, delay){
+	    if ($.isFunction(duration))
+	      callback = duration, ease = undefined, duration = undefined
+	    if ($.isFunction(ease))
+	      callback = ease, ease = undefined
+	    if ($.isPlainObject(duration))
+	      ease = duration.easing, callback = duration.complete, delay = duration.delay, duration = duration.duration
+	    if (duration) duration = (typeof duration == 'number' ? duration :
+	                    ($.fx.speeds[duration] || $.fx.speeds._default)) / 1000
+	    if (delay) delay = parseFloat(delay) / 1000
+	    return this.anim(properties, duration, ease, callback, delay)
+	  }
+
+	  $.fn.anim = function(properties, duration, ease, callback, delay){
+	    var key, cssValues = {}, cssProperties, transforms = '',
+	        that = this, wrappedCallback, endEvent = $.fx.transitionEnd,
+	        fired = false
+
+	    if (duration === undefined) duration = $.fx.speeds._default / 1000
+	    if (delay === undefined) delay = 0
+	    if ($.fx.off) duration = 0
+
+	    if (typeof properties == 'string') {
+	      // keyframe animation
+	      cssValues[animationName] = properties
+	      cssValues[animationDuration] = duration + 's'
+	      cssValues[animationDelay] = delay + 's'
+	      cssValues[animationTiming] = (ease || 'linear')
+	      endEvent = $.fx.animationEnd
+	    } else {
+	      cssProperties = []
+	      // CSS transitions
+	      for (key in properties)
+	        if (supportedTransforms.test(key)) transforms += key + '(' + properties[key] + ') '
+	        else cssValues[key] = properties[key], cssProperties.push(dasherize(key))
+
+	      if (transforms) cssValues[transform] = transforms, cssProperties.push(transform)
+	      if (duration > 0 && typeof properties === 'object') {
+	        cssValues[transitionProperty] = cssProperties.join(', ')
+	        cssValues[transitionDuration] = duration + 's'
+	        cssValues[transitionDelay] = delay + 's'
+	        cssValues[transitionTiming] = (ease || 'linear')
+	      }
+	    }
+
+	    wrappedCallback = function(event){
+	      if (typeof event !== 'undefined') {
+	        if (event.target !== event.currentTarget) return // makes sure the event didn't bubble from "below"
+	        $(event.target).unbind(endEvent, wrappedCallback)
+	      } else
+	        $(this).unbind(endEvent, wrappedCallback) // triggered by setTimeout
+
+	      fired = true
+	      $(this).css(cssReset)
+	      callback && callback.call(this)
+	    }
+	    if (duration > 0){
+	      this.bind(endEvent, wrappedCallback)
+	      // transitionEnd is not always firing on older Android phones
+	      // so make sure it gets fired
+	      setTimeout(function(){
+	        if (fired) return
+	        wrappedCallback.call(that)
+	      }, ((duration + delay) * 1000) + 25)
+	    }
+
+	    // trigger page reflow so new elements can animate
+	    this.size() && this.get(0).clientLeft
+
+	    this.css(cssValues)
+
+	    if (duration <= 0) setTimeout(function() {
+	      that.each(function(){ wrappedCallback.call(this) })
+	    }, 0)
+
+	    return this
+	  }
+
+	  testEl = null
+	})(Zepto)
 
 
 /***/ },
 /* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	//     Zepto.js
+	//     (c) 2010-2016 Thomas Fuchs
+	//     Zepto.js may be freely distributed under the MIT license.
+
+	var Zepto = __webpack_require__(3);
+
+	;(function($, undefined){
+	  var document = window.document, docElem = document.documentElement,
+	    origShow = $.fn.show, origHide = $.fn.hide, origToggle = $.fn.toggle
+
+	  function anim(el, speed, opacity, scale, callback) {
+	    if (typeof speed == 'function' && !callback) callback = speed, speed = undefined
+	    var props = { opacity: opacity }
+	    if (scale) {
+	      props.scale = scale
+	      el.css($.fx.cssPrefix + 'transform-origin', '0 0')
+	    }
+	    return el.animate(props, speed, null, callback)
+	  }
+
+	  function hide(el, speed, scale, callback) {
+	    return anim(el, speed, 0, scale, function(){
+	      origHide.call($(this))
+	      callback && callback.call(this)
+	    })
+	  }
+
+	  $.fn.show = function(speed, callback) {
+	    origShow.call(this)
+	    if (speed === undefined) speed = 0
+	    else this.css('opacity', 0)
+	    return anim(this, speed, 1, '1,1', callback)
+	  }
+
+	  $.fn.hide = function(speed, callback) {
+	    if (speed === undefined) return origHide.call(this)
+	    else return hide(this, speed, '0,0', callback)
+	  }
+
+	  $.fn.toggle = function(speed, callback) {
+	    if (speed === undefined || typeof speed == 'boolean')
+	      return origToggle.call(this, speed)
+	    else return this.each(function(){
+	      var el = $(this)
+	      el[el.css('display') == 'none' ? 'show' : 'hide'](speed, callback)
+	    })
+	  }
+
+	  $.fn.fadeTo = function(speed, opacity, callback) {
+	    return anim(this, speed, opacity, null, callback)
+	  }
+
+	  $.fn.fadeIn = function(speed, callback) {
+	    var target = this.css('opacity')
+	    if (target > 0) this.css('opacity', 0)
+	    else target = 1
+	    return origShow.call(this).fadeTo(speed, target, callback)
+	  }
+
+	  $.fn.fadeOut = function(speed, callback) {
+	    return hide(this, speed, null, callback)
+	  }
+
+	  $.fn.fadeToggle = function(speed, callback) {
+	    return this.each(function(){
+	      var el = $(this)
+	      el[
+	        (el.css('opacity') == 0 || el.css('display') == 'none') ? 'fadeIn' : 'fadeOut'
+	      ](speed, callback)
+	    })
+	  }
+
+	})(Zepto)
+
+
+/***/ },
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//     Zepto.js
@@ -2221,7 +2580,100 @@
 
 
 /***/ },
-/* 13 */
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	//     Zepto.js
+	//     (c) 2010-2016 Thomas Fuchs
+	//     Zepto.js may be freely distributed under the MIT license.
+
+	var Zepto = __webpack_require__(3);
+
+	;(function($){
+	  var zepto = $.zepto, oldQsa = zepto.qsa, oldMatches = zepto.matches
+
+	  function visible(elem){
+	    elem = $(elem)
+	    return !!(elem.width() || elem.height()) && elem.css("display") !== "none"
+	  }
+
+	  // Implements a subset from:
+	  // http://api.jquery.com/category/selectors/jquery-selector-extensions/
+	  //
+	  // Each filter function receives the current index, all nodes in the
+	  // considered set, and a value if there were parentheses. The value
+	  // of `this` is the node currently being considered. The function returns the
+	  // resulting node(s), null, or undefined.
+	  //
+	  // Complex selectors are not supported:
+	  //   li:has(label:contains("foo")) + li:has(label:contains("bar"))
+	  //   ul.inner:first > li
+	  var filters = $.expr[':'] = {
+	    visible:  function(){ if (visible(this)) return this },
+	    hidden:   function(){ if (!visible(this)) return this },
+	    selected: function(){ if (this.selected) return this },
+	    checked:  function(){ if (this.checked) return this },
+	    parent:   function(){ return this.parentNode },
+	    first:    function(idx){ if (idx === 0) return this },
+	    last:     function(idx, nodes){ if (idx === nodes.length - 1) return this },
+	    eq:       function(idx, _, value){ if (idx === value) return this },
+	    contains: function(idx, _, text){ if ($(this).text().indexOf(text) > -1) return this },
+	    has:      function(idx, _, sel){ if (zepto.qsa(this, sel).length) return this }
+	  }
+
+	  var filterRe = new RegExp('(.*):(\\w+)(?:\\(([^)]+)\\))?$\\s*'),
+	      childRe  = /^\s*>/,
+	      classTag = 'Zepto' + (+new Date())
+
+	  function process(sel, fn) {
+	    // quote the hash in `a[href^=#]` expression
+	    sel = sel.replace(/=#\]/g, '="#"]')
+	    var filter, arg, match = filterRe.exec(sel)
+	    if (match && match[2] in filters) {
+	      filter = filters[match[2]], arg = match[3]
+	      sel = match[1]
+	      if (arg) {
+	        var num = Number(arg)
+	        if (isNaN(num)) arg = arg.replace(/^["']|["']$/g, '')
+	        else arg = num
+	      }
+	    }
+	    return fn(sel, filter, arg)
+	  }
+
+	  zepto.qsa = function(node, selector) {
+	    return process(selector, function(sel, filter, arg){
+	      try {
+	        var taggedParent
+	        if (!sel && filter) sel = '*'
+	        else if (childRe.test(sel))
+	          // support "> *" child queries by tagging the parent node with a
+	          // unique class and prepending that classname onto the selector
+	          taggedParent = $(node).addClass(classTag), sel = '.'+classTag+' '+sel
+
+	        var nodes = oldQsa(node, sel)
+	      } catch(e) {
+	        console.error('error performing selector: %o', selector)
+	        throw e
+	      } finally {
+	        if (taggedParent) taggedParent.removeClass(classTag)
+	      }
+	      return !filter ? nodes :
+	        zepto.uniq($.map(nodes, function(n, i){ return filter.call(n, i, nodes, arg) }))
+	    })
+	  }
+
+	  zepto.matches = function(node, selector){
+	    return process(selector, function(sel, filter, arg){
+	      return (!sel || oldMatches(node, sel)) &&
+	        (!filter || filter.call(node, null, arg) === node)
+	    })
+	  }
+	})(Zepto)
+
+
+/***/ },
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -2245,7 +2697,7 @@
 
 
 /***/ },
-/* 14 */
+/* 16 */
 /***/ function(module, exports) {
 
 	//本插件由www.swiper.com.cn提供
@@ -2284,7 +2736,7 @@
 	}
 
 /***/ },
-/* 15 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*! iScroll v5.2.0 ~ (c) 2008-2016 Matteo Spinelli ~ http://cubiq.org/license */
@@ -2647,6 +3099,9 @@
 
 		this.options.invertWheelDirection = this.options.invertWheelDirection ? -1 : 1;
 
+		if ( this.options.probeType == 3 ) {
+			this.options.useTransition = false;	}
+
 	// INSERT POINT: NORMALIZATION
 
 		// Some defaults
@@ -2857,13 +3312,19 @@
 			this._translate(newX, newY);
 
 	/* REPLACE START: _move */
-
 			if ( timestamp - this.startTime > 300 ) {
 				this.startTime = timestamp;
 				this.startX = this.x;
 				this.startY = this.y;
+
+				if ( this.options.probeType == 1 ) {
+					this._execEvent('scroll');
+				}
 			}
 
+			if ( this.options.probeType > 1 ) {
+				this._execEvent('scroll');
+			}
 	/* REPLACE END: _move */
 
 		},
@@ -3486,6 +3947,10 @@
 
 			this.scrollTo(newX, newY, 0);
 
+			if ( this.options.probeType > 1 ) {
+				this._execEvent('scroll');
+			}
+
 	// INSERT POINT: _wheel
 		},
 
@@ -3874,7 +4339,7 @@
 				if ( now >= destTime ) {
 					that.isAnimating = false;
 					that._translate(destX, destY);
-
+					
 					if ( !that.resetPosition(that.options.bounceTime) ) {
 						that._execEvent('scrollEnd');
 					}
@@ -3891,11 +4356,16 @@
 				if ( that.isAnimating ) {
 					rAF(step);
 				}
+
+				if ( that.options.probeType == 3 ) {
+					that._execEvent('scroll');
+				}
 			}
 
 			this.isAnimating = true;
 			step();
 		},
+
 		handleEvent: function (e) {
 			switch ( e.type ) {
 				case 'touchstart':
@@ -4148,6 +4618,15 @@
 			newY = this.y + deltaY;
 
 			this._pos(newX, newY);
+
+
+			if ( this.scroller.options.probeType == 1 && timestamp - this.startTime > 300 ) {
+				this.startTime = timestamp;
+				this.scroller._execEvent('scroll');
+			} else if ( this.scroller.options.probeType > 1 ) {
+				this.scroller._execEvent('scroll');
+			}
+
 
 	// INSERT POINT: indicator._move
 
@@ -4409,6 +4888,18 @@
 
 	})(window, document, Math);
 
+
+/***/ },
+/* 18 */
+/***/ function(module, exports) {
+
+	/*
+	    radialIndicator.js v 1.0.0
+	    Author: Sudhanshu Yadav
+	    Copyright (c) 2015 Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
+	    Demo on: ignitersworld.com/lab/radialIndicator.html
+	*/
+	!function(t,e,n){"use strict";function r(t){var e=/^#?([a-f\d])([a-f\d])([a-f\d])$/i;t=t.replace(e,function(t,e,n,r){return e+e+n+n+r+r});var n=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(t);return n?[parseInt(n[1],16),parseInt(n[2],16),parseInt(n[3],16)]:null}function i(t,e,n,r){return Math.round(n+(r-n)*t/e)}function a(t,e,n,a,o){var u=-1!=o.indexOf("#")?r(o):o.match(/\d+/g),l=-1!=a.indexOf("#")?r(a):a.match(/\d+/g),s=n-e,h=t-e;return u&&l?"rgb("+i(h,s,l[0],u[0])+","+i(h,s,l[1],u[1])+","+i(h,s,l[2],u[2])+")":null}function o(){for(var t=arguments,e=t[0],n=1,r=t.length;r>n;n++){var i=t[n];for(var a in i)i.hasOwnProperty(a)&&(e[a]=i[a])}return e}function u(t){return function(e){if(!t)return e.toString();e=e||0;for(var n=e.toString().split("").reverse(),r=t.split("").reverse(),i=0,a=0,o=r.length;o>i&&n.length;i++)"#"==r[i]&&(a=i,r[i]=n.shift());return r.splice(a+1,r.lastIndexOf("#")-a,n.reverse().join("")),r.reverse().join("")}}function l(t,e){e=e||{},e=o({},s.defaults,e),this.indOption=e,"string"==typeof t&&(t=n.querySelector(t)),t.length&&(t=t[0]),this.container=t;var r=n.createElement("canvas");t.appendChild(r),this.canElm=r,this.ctx=r.getContext("2d"),this.current_value=e.initValue||e.minValue||0}function s(t,e){var n=new l(t,e);return n.init(),n}var h=2*Math.PI,f=Math.PI/2;l.prototype={constructor:s,init:function(){var t=this.indOption,e=this.canElm,n=this.ctx,r=2*(t.radius+t.barWidth),i=r/2;return this.formatter="function"==typeof t.format?t.format:u(t.format),this.maxLength=t.percentage?4:this.formatter(t.maxValue).length,e.width=r,e.height=r,n.strokeStyle=t.barBgColor,n.lineWidth=t.barWidth,n.beginPath(),n.arc(i,i,t.radius,0,2*Math.PI),n.stroke(),this.imgData=n.getImageData(0,0,r,r),this.value(this.current_value),this},value:function(t){if(void 0===t||isNaN(t))return this.current_value;t=parseInt(t);var e=this.ctx,n=this.indOption,r=n.barColor,i=2*(n.radius+n.barWidth),o=n.minValue,u=n.maxValue,l=i/2;t=o>t?o:t>u?u:t;var s=Math.round(100*(t-o)/(u-o)*100)/100,c=n.percentage?s+"%":this.formatter(t);if(this.current_value=t,e.putImageData(this.imgData,0,0),"object"==typeof r)for(var d=Object.keys(r),m=1,v=d.length;v>m;m++){var g=d[m-1],p=d[m],x=r[g],b=r[p],I=t==g?x:t==p?b:t>g&&p>t?n.interpolate?a(t,g,p,x,b):b:!1;if(0!=I){r=I;break}}if(e.strokeStyle=r,n.roundCorner&&(e.lineCap="round"),e.beginPath(),e.arc(l,l,n.radius,-f,h*s/100-f,!1),e.stroke(),n.displayNumber){var y=e.font.split(" "),C=n.fontWeight,O=n.fontSize||i/(this.maxLength-(Math.floor(1.4*this.maxLength/4)-1));y=n.fontFamily||y[y.length-1],e.fillStyle=n.fontColor||r,e.font=C+" "+O+"px "+y,e.textAlign="center",e.textBaseline="middle",e.fillText(c,l,l)}return this},animate:function(t){var e=this.indOption,n=this.current_value||e.minValue,r=this,i=Math.ceil((e.maxValue-e.minValue)/(e.frameNum||(e.percentage?100:500))),a=n>t;return this.intvFunc&&clearInterval(this.intvFunc),this.intvFunc=setInterval(function(){if(!a&&n>=t||a&&t>=n){if(r.current_value==n)return void clearInterval(r.intvFunc);n=t}r.value(n),n!=t&&(n+=a?-i:i)},e.frameTime),this},option:function(t,e){return void 0===e?this.option[t]:(-1!=["radius","barWidth","barBgColor","format","maxValue","percentage"].indexOf(t)&&(this.indOption[t]=e,this.init().value(this.current_value)),void(this.indOption[t]=e))}},s.defaults={radius:50,barWidth:5,barBgColor:"#eeeeee",barColor:"#99CC33",format:null,frameTime:10,frameNum:null,fontColor:null,fontFamily:null,fontWeight:"bold",fontSize:null,interpolate:!0,percentage:!1,displayNumber:!0,roundCorner:!1,minValue:0,maxValue:100,initValue:0},e.radialIndicator=s,t&&(t.fn.radialIndicator=function(e){return this.each(function(){var n=s(this,e);t.data(this,"radialIndicator",n)})})}(window.jQuery,window,document,void 0);
 
 /***/ }
 /******/ ]);

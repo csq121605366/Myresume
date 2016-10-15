@@ -25,6 +25,8 @@
 	-ms-flex-align: flex-start;
 	-webkit-align-items: flex-start;
 	align-items: flex-start;
+	overflow: hidden;
+	position: relative;
 }
 
 .swiper-pagination {

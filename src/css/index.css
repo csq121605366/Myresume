@@ -2835,7 +2835,9 @@ button.swiper-pagination-bullet {
   -webkit-box-align: flex-start;
   -ms-flex-align: flex-start;
   -webkit-align-items: flex-start;
-  align-items: flex-start; }
+  align-items: flex-start;
+  overflow: hidden;
+  position: relative; }
 
 .swiper-pagination {
   width: 100%;
@@ -2872,23 +2874,83 @@ button.swiper-pagination-bullet {
   flex-flow: column !important; }
 
 /* 基础css */
-html,
-body {
-  position: relative;
-  height: 100%;
-  overflow: hidden; }
-
-body {
-  background: #eee;
-  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
-  font-size: 14px;
-  color: #333;
+html, body, ul, li, ol, dl, dd, dt, p, h1, h2, h3, h4, h5, h6, form, fieldset, legend, img {
   margin: 0;
   padding: 0; }
 
+fieldset, img {
+  border: none; }
+
+img {
+  display: block; }
+
+address, caption, cite, code, dfn, th, var {
+  font-style: normal;
+  font-weight: normal; }
+
+ul, ol {
+  list-style: none; }
+
+body {
+  overflow: hidden;
+  color: #333;
+  font: 16px/24px "微软雅黑", "宋体","Arial Narrow",HELVETICA;
+  background: #fff;
+  /* overflow-y:scroll;*/
+  overflow-x: hidden; }
+
+a {
+  color: #666;
+  text-decoration: none; }
+
+@font-face {
+  font-family: "iconfont";
+  src: url("./iconfont/iconfont.eot?t=1476498659");
+  /* IE9*/
+  src: url("./iconfont/iconfont.eot?t=1476498659#iefix") format("embedded-opentype"), url("./iconfont/iconfont.woff?t=1476498659") format("woff"), url("./iconfont/iconfont.ttf?t=1476498659") format("truetype"), url("./iconfont/iconfont.svg?t=1476498659#iconfont") format("svg");
+  /* iOS 4.1- */ }
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-stroke-width: 0.2px;
+  -moz-osx-font-smoothing: grayscale; }
+
+.icon-jiahao:before {
+  content: "\f003a"; }
+
+.icon-saoyisao:before {
+  content: "\e610"; }
+
+.icon-friends:before {
+  content: "\e644"; }
+
+.icon-fenxiangqq:before {
+  content: "\e634"; }
+
+.icon-fenxiang08:before {
+  content: "\e6b3"; }
+
+.icon-jineng:before {
+  content: "\e64e"; }
+
+.icon-xiangmu:before {
+  content: "\e6c9"; }
+
+.icon-bag-line:before {
+  content: "\e6ee"; }
+
+.icon-ziwojieshaoline:before {
+  content: "\e6e6"; }
+
+/****************************
+*			变量
+ *****************************/
 header {
   width: 100%;
-  height: 45px;
+  height: 55px;
   background: #37363b;
   color: #fff;
   position: absolute;
@@ -2910,33 +2972,42 @@ header {
   position: absolute;
   width: 100%;
   left: 0;
-  top: 45px;
-  height: calc(100% - 45px) !important; }
+  top: 55px;
+  height: calc(100% - 55px) !important; }
 
 .hide {
   display: none;
   height: 0; }
 
-header button {
-  color: white;
-  outline: none;
-  width: 60px;
-  height: 30px;
-  border-radius: 10px;
-  border: none;
-  background-color: #888; }
+.share {
+  position: relative;
+  margin-right: 20px; }
+  .share .share-list {
+    position: absolute;
+    top: 30px;
+    right: -10px;
+    padding: 20px 0;
+    width: 160px;
+    display: none;
+    background-color: #37363B; }
+    .share .share-list .sl-item {
+      font-size: 14px;
+      display: inline-flex;
+      flex-flow: row;
+      align-items: center;
+      padding: 6px 10px; }
+      .share .share-list .sl-item .iconfont {
+        margin-right: 4px;
+        font-size: 26px; }
 
-button.share {
+.scan {
   margin-left: 20px; }
 
-button.scan {
-  margin-right: 20px; }
+i.iconfont {
+  font-size: 30px; }
 
-/****************************************** 
- * 					变量
- *****************************************/
 /**************************************** 
-					预加载样式
+*           预加载样式
 ****************************************/
 #preload {
   position: fixed;
@@ -2946,3 +3017,79 @@ button.scan {
   height: 100%;
   z-index: 999;
   background: #99CCFF url("../images/3.gif") no-repeat center; }
+
+/************************************
+*           技能页
+***********************************/
+#wrapper {
+  overflow: hidden;
+  position: absolute;
+  width: 100%;
+  height: 100%; }
+  #wrapper #scroller {
+    overflow: hidden;
+    width: 100%; }
+    #wrapper #scroller .pullDown {
+      line-height: 60px;
+      height: 60px; }
+    #wrapper #scroller .pullUp {
+      height: 60px;
+      line-height: 60px; }
+
+.list-skill {
+  position: relative;
+  width: 100%; }
+
+.list-skill .item {
+  width: 100%;
+  height: 90px;
+  position: relative;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center; }
+
+.list-skill .item:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: block;
+  width: 100%;
+  border-bottom: 1px solid #333;
+  transform: scaleY(0.4); }
+
+.list-skill .item-circle {
+  position: relative;
+  width: 24%;
+  height: 100%; }
+  .list-skill .item-circle canvas {
+    background-color: rbga(0, 0, 0, 0.5);
+    width: 80%;
+    height: 80%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto; }
+  .list-skill .item-circle img {
+    width: 35%;
+    height: 35%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto; }
+
+.list-skill .item-content {
+  width: 76%;
+  height: 100%;
+  text-align: left; }
+  .list-skill .item-content h2 {
+    font-size: 18px;
+    line-height: 28px; }
+  .list-skill .item-content p {
+    font-size: 12px;
+    line-height: 20px; }
