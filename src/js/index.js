@@ -70,7 +70,8 @@
 
 	//引入圆形进度条
 	__webpack_require__(18);
-
+	// 引入微信jsdk
+	var wx = __webpack_require__(19);
 
 	/**************************************************
 	 * 					预加载
@@ -81,17 +82,18 @@
 	 		clearInterval(timer);
 	 		$("#preload").hide();
 	 		iScroll();
-	 		// swiper_h.updateSlidesSize();
-	 		// swiper_h.updatePagination();	
-	 		// swiper_v.updateSlidesSize();
-	 		// swiper_v.updatePagination();
+	 		myScroll.refresh();
+	 		// swiper-h.updateSlidesSize();
+	 		// swiper-h.updatePagination();	
+	 		// swiper-v.updateSlidesSize();
+	 		// swiper-v.updatePagination();
 	 	}
 	 },100)
 
 
 	 var oText=["技能","项目","经验","自我介绍"];
-	 var swiper_h = new Swiper('.swiper-h', {
-	 	pagination: '.swiper-pagination',
+	 var swiper_h = new Swiper('.swiper-container-h', {
+	 	pagination: '.swiper-pagination-h',
 	 	paginationClickable: true,
 	 	parallax: true,
 	 	speed: 600,
@@ -100,20 +102,29 @@
 	 	}
 	 });
 
-	 var swiper_v = new Swiper('.swiper-v', {
-	 	pagination: '.swiper-pagination',
+	 var swiper_v = new Swiper('.swiper-container-v', {
+	 	pagination: '.swiper-pagination-v',
 	 	paginationClickable: true,    
 	 	direction: 'vertical',
-	 	loop:true,
 	 	touchRatio : 0.7,
 	 	touchAngle : 10,
+	 	spaceBetween : 20,
 	 	paginationBulletRender: function (index, className) {
 	 		return '<span class="' + className + '"></span>';
 	 	}
 	 });
 
+	 var swiper_v_me = new Swiper('.swiper-container-v-me', {
+	 	pagination: '.swiper-pagination-v-me',
+	 	paginationClickable: true,    
+	 	direction: 'vertical',
+	 	touchRatio : 0.7,
+	 	touchAngle : 10
+	 });
 
-
+	/********************************************************
+	 * 					点击四个选项卡的动画
+	 *******************************************************/
 
 
 
@@ -123,7 +134,6 @@
 	 *******************************************************/
 
 	 $(".share .iconfont").on("tap",function(e){
-	 	console.log(e)
 	 	e.cancelBubble=true;
 	 	$(".share-list").toggle();
 	 })
@@ -132,21 +142,48 @@
 	 	$(".share-list").hide();
 	 })
 
+	/*
+	 
+	 $.post("http://csq121605366.applinzi.com/getsign.php",{
+	 	url:location.href
+	 },function (data) {
+	 	pos=data.indexOf("}");
+	 	dataStr=data.substring(0,pos+1);
+	 	objData=JSON.parse(dataStr);
+	 	wx.config({
+	        debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+	        appId:objData.appId, // 必填，公众号的唯一标识
+	        timestamp:objData.timestamp , // 必填，生成签名的时间戳
+	        nonceStr:objData.nonceStr, // 必填，生成签名的随机串
+	        signature: objData.signature,// 必填，签名，见附录1
+	        jsApiList: ['scanQRCode','onMenuShareTimeline','onMenuShareQQ','onMenuShareQZone'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+	    });
+	 })
 
 
-	// $.post("http://csq121605366.applinzi.com/getsign.php",{
-	// 	url:location.href
-	// },function (data) {
-	// 	pos=data.indexOf("}");
-	// 	dataStr=data.substring(0,pos+1);
-	// 	objData=JSON.parse(dataStr);
-	// 	console.log(dataStr);
-	// })
+	 //微信ready
+	 wx.ready(function () {
+	 	//微信扫一扫 
+	 	$(".scan .iconfont").on("tap",function(){
+	 		wx.scanQRCode({
+	            needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+	            scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+	            success: function (res) {
+	               var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+	               alert(result);
+	           }
+	       })
+	 	})
+	 })
+
+
+	*/
+
+
 
 	/********************************************************
 	 * 					skill
 	 *******************************************************/
-
 
 
 		// iscroll滚动
@@ -169,9 +206,9 @@
 			setTimeout(function () {
 				createItem(iData,iData+2,function () {
 					$(".pullUp").removeClass(".active").hide();
-				myScroll.refresh();
-				myScroll.scrollTo(0,myScroll.maxScrollY + 20);
-				loadingStep=0;
+					myScroll.refresh();
+					myScroll.scrollTo(0,myScroll.maxScrollY + 20);
+					loadingStep=0;
 				});	
 			},800)
 		}
@@ -195,7 +232,7 @@
 			//滚动时
 			myScroll.on("scroll",function (e) {
 				if(loadingStep==0){
-				if(this.y>30){
+					if(this.y>30){
 				//下拉刷新效果
 				$(".pullDown").addClass('active').show(300);
 				loadingStep=1;
@@ -230,12 +267,11 @@
 		// skill页面操作dom
 		function createItem(imin,imax,fn) {
 			//获取数据
-			$.get("./mock/skill.json",function (json) {
+			$.get("http://csq121605366.applinzi.com/mock/skill.php?callback=?",function (json) {
 				var sHtml="";
 				if(json.length<=iData){
-					navigator.vibrate(2000);//手机震动
-					alert("加载完毕");
-					return false;
+					navigator.vibrate(800);//手机震动
+					alert("还有更多内容，请于我详谈。");
 				}
 				$.each(json,function (index,obj) {
 					if(index<=imax&&index>=imin){
@@ -243,7 +279,7 @@
 						++iData;
 						$("#add").append($(sHtml));
 						var radialObj = radialIndicator('#circle-'+index+'', {
-							barColor : '#87CEEB',
+							barColor : '#99CCFF',
 							barWidth : 10,
 							initValue : 0,
 							displayNumber: false
@@ -260,9 +296,75 @@
 
 		createItem(0,6)
 
+	/********************************************************
+	 * 					project
+	 *******************************************************/
 
 
-	var supportsVibrate = "vibrate" in navigator;
+	 function proCreateItem() {
+	 	//获取信息
+	 	$.get("http://csq121605366.applinzi.com/mock/project.php?callback=?",function (json) {
+	 		// console.log(json)
+	 		var sHtml=""
+	 		$.each(json,function (index,obj) {
+	 			sHtml+='<div class="swiper-slide">'+
+	 			'<table class="list-project">'+
+	 			'<tr><th colspan="2">'+obj.name+'</th></tr>'+
+	 			'<tr><td colspan="2"><img src="'+obj.images+'"></td></tr>'+
+	 			'<tr><td>类型:</td><td>'+obj.category+'</td></tr>'+
+	 			'<tr><td>网址:</td><td>'+obj.url+'</td></tr>'+
+	 			'<tr><td>公司介绍:</td><td>'+obj.description+'</td></tr>'+
+	 			'<tr><td>工程介绍:</td><td>'+obj.detail+'</td></tr>'+
+	 			'<tr><td>描述:</td><td>'+obj.tech+'</td></tr></table></div>';
+	 		})
+	 		$(".swiper-container-v .swiper-wrapper").append($(sHtml));
+	 		swiper_v.updateSlidesSize();
+	 		swiper_v.updatePagination();
+	 		swiper_v.updateContainerSize();
+	 	})
+	 }
+
+	 proCreateItem();
+
+	/********************************************************
+	 * 					experience
+	 *******************************************************/
+	 
+	// 经验页面的iscroll
+	var exper_scroll=new IScroll(".scroll-wrap",{
+		bounce:true,
+		shrinkScrollbars:'scale',
+		momentum:true
+	});
+
+	function experCreateItem() {
+		//获取信息
+		$.get("http://csq121605366.applinzi.com/mock/work.php?callback=?",function (json) {
+	 		// console.log(json)
+	 		var sHtml=""
+	 		$.each(json,function (index,obj) {
+	 			sHtml+= '<li class="timeline-item"><time class="tl-time">'+
+	 			'<span>'+obj.timeStart+'</span>'+
+	 			'<span>'+obj.timeEnd+'</span></time><div class="tl-icon"></div>'+
+	 			'<div class="tl-content">'+
+	 			'<h2>'+obj.name+'</h2>'+
+	 			'<p><img src="'+obj.image+'" alt=""></p>'+
+	 			'<p>'+obj.posts+'</p></div></li>';
+	 		})
+	 		$(".timeline").append($(sHtml));
+	 		exper_scroll.refresh();
+	 	})
+	}
+
+	experCreateItem()
+
+	/********************************************************
+	 * 					about me
+	 *******************************************************/
+
+
+
+
 
 
 
@@ -4900,6 +5002,393 @@
 	    Demo on: ignitersworld.com/lab/radialIndicator.html
 	*/
 	!function(t,e,n){"use strict";function r(t){var e=/^#?([a-f\d])([a-f\d])([a-f\d])$/i;t=t.replace(e,function(t,e,n,r){return e+e+n+n+r+r});var n=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(t);return n?[parseInt(n[1],16),parseInt(n[2],16),parseInt(n[3],16)]:null}function i(t,e,n,r){return Math.round(n+(r-n)*t/e)}function a(t,e,n,a,o){var u=-1!=o.indexOf("#")?r(o):o.match(/\d+/g),l=-1!=a.indexOf("#")?r(a):a.match(/\d+/g),s=n-e,h=t-e;return u&&l?"rgb("+i(h,s,l[0],u[0])+","+i(h,s,l[1],u[1])+","+i(h,s,l[2],u[2])+")":null}function o(){for(var t=arguments,e=t[0],n=1,r=t.length;r>n;n++){var i=t[n];for(var a in i)i.hasOwnProperty(a)&&(e[a]=i[a])}return e}function u(t){return function(e){if(!t)return e.toString();e=e||0;for(var n=e.toString().split("").reverse(),r=t.split("").reverse(),i=0,a=0,o=r.length;o>i&&n.length;i++)"#"==r[i]&&(a=i,r[i]=n.shift());return r.splice(a+1,r.lastIndexOf("#")-a,n.reverse().join("")),r.reverse().join("")}}function l(t,e){e=e||{},e=o({},s.defaults,e),this.indOption=e,"string"==typeof t&&(t=n.querySelector(t)),t.length&&(t=t[0]),this.container=t;var r=n.createElement("canvas");t.appendChild(r),this.canElm=r,this.ctx=r.getContext("2d"),this.current_value=e.initValue||e.minValue||0}function s(t,e){var n=new l(t,e);return n.init(),n}var h=2*Math.PI,f=Math.PI/2;l.prototype={constructor:s,init:function(){var t=this.indOption,e=this.canElm,n=this.ctx,r=2*(t.radius+t.barWidth),i=r/2;return this.formatter="function"==typeof t.format?t.format:u(t.format),this.maxLength=t.percentage?4:this.formatter(t.maxValue).length,e.width=r,e.height=r,n.strokeStyle=t.barBgColor,n.lineWidth=t.barWidth,n.beginPath(),n.arc(i,i,t.radius,0,2*Math.PI),n.stroke(),this.imgData=n.getImageData(0,0,r,r),this.value(this.current_value),this},value:function(t){if(void 0===t||isNaN(t))return this.current_value;t=parseInt(t);var e=this.ctx,n=this.indOption,r=n.barColor,i=2*(n.radius+n.barWidth),o=n.minValue,u=n.maxValue,l=i/2;t=o>t?o:t>u?u:t;var s=Math.round(100*(t-o)/(u-o)*100)/100,c=n.percentage?s+"%":this.formatter(t);if(this.current_value=t,e.putImageData(this.imgData,0,0),"object"==typeof r)for(var d=Object.keys(r),m=1,v=d.length;v>m;m++){var g=d[m-1],p=d[m],x=r[g],b=r[p],I=t==g?x:t==p?b:t>g&&p>t?n.interpolate?a(t,g,p,x,b):b:!1;if(0!=I){r=I;break}}if(e.strokeStyle=r,n.roundCorner&&(e.lineCap="round"),e.beginPath(),e.arc(l,l,n.radius,-f,h*s/100-f,!1),e.stroke(),n.displayNumber){var y=e.font.split(" "),C=n.fontWeight,O=n.fontSize||i/(this.maxLength-(Math.floor(1.4*this.maxLength/4)-1));y=n.fontFamily||y[y.length-1],e.fillStyle=n.fontColor||r,e.font=C+" "+O+"px "+y,e.textAlign="center",e.textBaseline="middle",e.fillText(c,l,l)}return this},animate:function(t){var e=this.indOption,n=this.current_value||e.minValue,r=this,i=Math.ceil((e.maxValue-e.minValue)/(e.frameNum||(e.percentage?100:500))),a=n>t;return this.intvFunc&&clearInterval(this.intvFunc),this.intvFunc=setInterval(function(){if(!a&&n>=t||a&&t>=n){if(r.current_value==n)return void clearInterval(r.intvFunc);n=t}r.value(n),n!=t&&(n+=a?-i:i)},e.frameTime),this},option:function(t,e){return void 0===e?this.option[t]:(-1!=["radius","barWidth","barBgColor","format","maxValue","percentage"].indexOf(t)&&(this.indOption[t]=e,this.init().value(this.current_value)),void(this.indOption[t]=e))}},s.defaults={radius:50,barWidth:5,barBgColor:"#eeeeee",barColor:"#99CC33",format:null,frameTime:10,frameNum:null,fontColor:null,fontFamily:null,fontWeight:"bold",fontSize:null,interpolate:!0,percentage:!1,displayNumber:!0,roundCorner:!1,minValue:0,maxValue:100,initValue:0},e.radialIndicator=s,t&&(t.fn.radialIndicator=function(e){return this.each(function(){var n=s(this,e);t.data(this,"radialIndicator",n)})})}(window.jQuery,window,document,void 0);
+
+/***/ },
+/* 19 */
+/***/ function(module, exports) {
+
+	!function (a, b) {
+	    module.exports = b(a)
+	}(window, function (a, b) {
+	    function c(b, c, d) {
+	        a.WeixinJSBridge ? WeixinJSBridge.invoke(b, e(c), function (a) {
+	            g(b, a, d)
+	        }) : j(b, d)
+	    }
+
+	    function d(b, c, d) {
+	        a.WeixinJSBridge ? WeixinJSBridge.on(b, function (a) {
+	            d && d.trigger && d.trigger(a), g(b, a, c)
+	        }) : d ? j(b, d) : j(b, c)
+	    }
+
+	    function e(a) {
+	        return a = a || {}, a.appId = z.appId, a.verifyAppId = z.appId, a.verifySignType = "sha1", a.verifyTimestamp = z.timestamp + "", a.verifyNonceStr = z.nonceStr, a.verifySignature = z.signature, a
+	    }
+
+	    function f(a) {
+	        return {
+	            timeStamp: a.timestamp + "",
+	            nonceStr: a.nonceStr,
+	            "package": a.package,
+	            paySign: a.paySign,
+	            signType: a.signType || "SHA1"
+	        }
+	    }
+
+	    function g(a, b, c) {
+	        var d, e, f;
+	        switch (delete b.err_code, delete b.err_desc, delete b.err_detail, d = b.errMsg, d || (d = b.err_msg, delete b.err_msg, d = h(a, d, c), b.errMsg = d), c = c || {}, c._complete && (c._complete(b), delete c._complete), d = b.errMsg || "", z.debug && !c.isInnerInvoke && alert(JSON.stringify(b)), e = d.indexOf(":"), f = d.substring(e + 1)) {
+	            case"ok":
+	                c.success && c.success(b);
+	                break;
+	            case"cancel":
+	                c.cancel && c.cancel(b);
+	                break;
+	            default:
+	                c.fail && c.fail(b)
+	        }
+	        c.complete && c.complete(b)
+	    }
+
+	    function h(a, b) {
+	        var d, e, f, g;
+	        if (b) {
+	            switch (d = b.indexOf(":"), a) {
+	                case o.config:
+	                    e = "config";
+	                    break;
+	                case o.openProductSpecificView:
+	                    e = "openProductSpecificView";
+	                    break;
+	                default:
+	                    e = b.substring(0, d), e = e.replace(/_/g, " "), e = e.replace(/\b\w+\b/g, function (a) {
+	                        return a.substring(0, 1).toUpperCase() + a.substring(1)
+	                    }), e = e.substring(0, 1).toLowerCase() + e.substring(1), e = e.replace(/ /g, ""), -1 != e.indexOf("Wcpay") && (e = e.replace("Wcpay", "WCPay")), f = p[e], f && (e = f)
+	            }
+	            g = b.substring(d + 1), "confirm" == g && (g = "ok"), "failed" == g && (g = "fail"), -1 != g.indexOf("failed_") && (g = g.substring(7)), -1 != g.indexOf("fail_") && (g = g.substring(5)), g = g.replace(/_/g, " "), g = g.toLowerCase(), ("access denied" == g || "no permission to execute" == g) && (g = "permission denied"), "config" == e && "function not exist" == g && (g = "ok"), b = e + ":" + g
+	        }
+	        return b
+	    }
+
+	    function i(a) {
+	        var b, c, d, e;
+	        if (a) {
+	            for (b = 0, c = a.length; c > b; ++b)d = a[b], e = o[d], e && (a[b] = e);
+	            return a
+	        }
+	    }
+
+	    function j(a, b) {
+	        if (!(!z.debug || b && b.isInnerInvoke)) {
+	            var c = p[a];
+	            c && (a = c), b && b._complete && delete b._complete, console.log('"' + a + '",', b || "")
+	        }
+	    }
+
+	    function k() {
+	        if (!("6.0.2" > w || y.systemType < 0)) {
+	            var b = new Image;
+	            y.appId = z.appId, y.initTime = x.initEndTime - x.initStartTime, y.preVerifyTime = x.preVerifyEndTime - x.preVerifyStartTime, C.getNetworkType({
+	                isInnerInvoke: !0,
+	                success: function (a) {
+	                    y.networkType = a.networkType;
+	                    var c = "https://open.weixin.qq.com/sdk/report?v=" + y.version + "&o=" + y.isPreVerifyOk + "&s=" + y.systemType + "&c=" + y.clientVersion + "&a=" + y.appId + "&n=" + y.networkType + "&i=" + y.initTime + "&p=" + y.preVerifyTime + "&u=" + y.url;
+	                    b.src = c
+	                }
+	            })
+	        }
+	    }
+
+	    function l() {
+	        return (new Date).getTime()
+	    }
+
+	    function m(b) {
+	        t && (a.WeixinJSBridge ? b() : q.addEventListener && q.addEventListener("WeixinJSBridgeReady", b, !1))
+	    }
+
+	    function n() {
+	        C.invoke || (C.invoke = function (b, c, d) {
+	            a.WeixinJSBridge && WeixinJSBridge.invoke(b, e(c), d)
+	        }, C.on = function (b, c) {
+	            a.WeixinJSBridge && WeixinJSBridge.on(b, c)
+	        })
+	    }
+
+	    var o, p, q, r, s, t, u, v, w, x, y, z, A, B, C;
+	    if (!a.jWeixin)return o = {
+	        config: "preVerifyJSAPI",
+	        onMenuShareTimeline: "menu:share:timeline",
+	        onMenuShareAppMessage: "menu:share:appmessage",
+	        onMenuShareQQ: "menu:share:qq",
+	        onMenuShareWeibo: "menu:share:weiboApp",
+	        onMenuShareQZone: "menu:share:QZone",
+	        previewImage: "imagePreview",
+	        getLocation: "geoLocation",
+	        openProductSpecificView: "openProductViewWithPid",
+	        addCard: "batchAddCard",
+	        openCard: "batchViewCard",
+	        chooseWXPay: "getBrandWCPayRequest"
+	    }, p = function () {
+	        var b, a = {};
+	        for (b in o)a[o[b]] = b;
+	        return a
+	    }(), q = a.document,
+	        r = q.title,
+	        s = navigator.userAgent.toLowerCase(), t = -1 != s.indexOf("micromessenger"), u = -1 != s.indexOf("android"), v = -1 != s.indexOf("iphone") || -1 != s.indexOf("ipad"), w = function () {
+	        var a = s.match(/micromessenger\/(\d+\.\d+\.\d+)/) || s.match(/micromessenger\/(\d+\.\d+)/);
+	        return a ? a[1] : ""
+	    }(), x = {initStartTime: l(), initEndTime: 0, preVerifyStartTime: 0, preVerifyEndTime: 0}, y = {
+	        version: 1,
+	        appId: "",
+	        initTime: 0,
+	        preVerifyTime: 0,
+	        networkType: "",
+	        isPreVerifyOk: 1,
+	        systemType: v ? 1 : u ? 2 : -1,
+	        clientVersion: w,
+	        url: encodeURIComponent(location.href)
+	    }, z = {}, A = {_completes: []}, B = {state: 0, res: {}}, m(function () {
+	        x.initEndTime = l()
+	    }), C = {
+	        config: function (a) {
+	            z = a, j("config", a);
+	            var b = z.check === !1 ? !1 : !0;
+	            m(function () {
+	                var a, d, e;
+	                if (b)c(o.config, {verifyJsApiList: i(z.jsApiList)}, function () {
+	                    A._complete = function (a) {
+	                        x.preVerifyEndTime = l(), B.state = 1, B.res = a
+	                    }, A.success = function () {
+	                        y.isPreVerifyOk = 0
+	                    }, A.fail = function (a) {
+	                        A._fail ? A._fail(a) : B.state = -1
+	                    };
+	                    var a = A._completes;
+	                    return a.push(function () {
+	                        z.debug || k()
+	                    }), A.complete = function () {
+	                        for (var c = 0, d = a.length; d > c; ++c)a[c]();
+	                        A._completes = []
+	                    }, A
+	                }()), x.preVerifyStartTime = l(); else {
+	                    for (B.state = 1, a = A._completes, d = 0, e = a.length; e > d; ++d)a[d]();
+	                    A._completes = []
+	                }
+	            }), z.beta && n()
+	        }, ready: function (a) {
+	            0 != B.state ? a() : (A._completes.push(a), !t && z.debug && a())
+	        }, error: function (a) {
+	            "6.0.2" > w || (-1 == B.state ? a(B.res) : A._fail = a)
+	        }, checkJsApi: function (a) {
+	            var b = function (a) {
+	                var c, d, b = a.checkResult;
+	                for (c in b)d = p[c], d && (b[d] = b[c], delete b[c]);
+	                return a
+	            };
+	            c("checkJsApi", {jsApiList: i(a.jsApiList)}, function () {
+	                return a._complete = function (a) {
+	                    if (u) {
+	                        var c = a.checkResult;
+	                        c && (a.checkResult = JSON.parse(c))
+	                    }
+	                    a = b(a)
+	                }, a
+	            }())
+	        }, onMenuShareTimeline: function (a) {
+	            d(o.onMenuShareTimeline, {
+	                complete: function () {
+	                    c("shareTimeline", {
+	                        title: a.title || r,
+	                        desc: a.title || r,
+	                        img_url: a.imgUrl || "",
+	                        link: a.link || location.href
+	                    }, a)
+	                }
+	            }, a)
+	        }, onMenuShareAppMessage: function (a) {
+	            d(o.onMenuShareAppMessage, {
+	                complete: function () {
+	                    c("sendAppMessage", {
+	                        title: a.title || r,
+	                        desc: a.desc || "",
+	                        link: a.link || location.href,
+	                        img_url: a.imgUrl || "",
+	                        type: a.type || "link",
+	                        data_url: a.dataUrl || ""
+	                    }, a)
+	                }
+	            }, a)
+	        }, onMenuShareQQ: function (a) {
+	            d(o.onMenuShareQQ, {
+	                complete: function () {
+	                    c("shareQQ", {
+	                        title: a.title || r,
+	                        desc: a.desc || "",
+	                        img_url: a.imgUrl || "",
+	                        link: a.link || location.href
+	                    }, a)
+	                }
+	            }, a)
+	        }, onMenuShareWeibo: function (a) {
+	            d(o.onMenuShareWeibo, {
+	                complete: function () {
+	                    c("shareWeiboApp", {
+	                        title: a.title || r,
+	                        desc: a.desc || "",
+	                        img_url: a.imgUrl || "",
+	                        link: a.link || location.href
+	                    }, a)
+	                }
+	            }, a)
+	        }, onMenuShareQZone: function (a) {
+	            d(o.onMenuShareQZone, {
+	                complete: function () {
+	                    c("shareQZone", {
+	                        title: a.title || r,
+	                        desc: a.desc || "",
+	                        img_url: a.imgUrl || "",
+	                        link: a.link || location.href
+	                    }, a)
+	                }
+	            }, a)
+	        }, startRecord: function (a) {
+	            c("startRecord", {}, a)
+	        }, stopRecord: function (a) {
+	            c("stopRecord", {}, a)
+	        }, onVoiceRecordEnd: function (a) {
+	            d("onVoiceRecordEnd", a)
+	        }, playVoice: function (a) {
+	            c("playVoice", {localId: a.localId}, a)
+	        }, pauseVoice: function (a) {
+	            c("pauseVoice", {localId: a.localId}, a)
+	        }, stopVoice: function (a) {
+	            c("stopVoice", {localId: a.localId}, a)
+	        }, onVoicePlayEnd: function (a) {
+	            d("onVoicePlayEnd", a)
+	        }, uploadVoice: function (a) {
+	            c("uploadVoice", {localId: a.localId, isShowProgressTips: 0 == a.isShowProgressTips ? 0 : 1}, a)
+	        }, downloadVoice: function (a) {
+	            c("downloadVoice", {serverId: a.serverId, isShowProgressTips: 0 == a.isShowProgressTips ? 0 : 1}, a)
+	        }, translateVoice: function (a) {
+	            c("translateVoice", {localId: a.localId, isShowProgressTips: 0 == a.isShowProgressTips ? 0 : 1}, a)
+	        }, chooseImage: function (a) {
+	            c("chooseImage", {
+	                scene: "1|2",
+	                count: a.count || 9,
+	                sizeType: a.sizeType || ["original", "compressed"],
+	                sourceType: a.sourceType || ["album", "camera"]
+	            }, function () {
+	                return a._complete = function (a) {
+	                    if (u) {
+	                        var b = a.localIds;
+	                        b && (a.localIds = JSON.parse(b))
+	                    }
+	                }, a
+	            }())
+	        }, previewImage: function (a) {
+	            c(o.previewImage, {current: a.current, urls: a.urls}, a)
+	        }, uploadImage: function (a) {
+	            c("uploadImage", {localId: a.localId, isShowProgressTips: 0 == a.isShowProgressTips ? 0 : 1}, a)
+	        }, downloadImage: function (a) {
+	            c("downloadImage", {serverId: a.serverId, isShowProgressTips: 0 == a.isShowProgressTips ? 0 : 1}, a)
+	        }, getNetworkType: function (a) {
+	            var b = function (a) {
+	                var c, d, e, b = a.errMsg;
+	                if (a.errMsg = "getNetworkType:ok", c = a.subtype, delete a.subtype, c)a.networkType = c; else switch (d = b.indexOf(":"), e = b.substring(d + 1)) {
+	                    case"wifi":
+	                    case"edge":
+	                    case"wwan":
+	                        a.networkType = e;
+	                        break;
+	                    default:
+	                        a.errMsg = "getNetworkType:fail"
+	                }
+	                return a
+	            };
+	            c("getNetworkType", {}, function () {
+	                return a._complete = function (a) {
+	                    a = b(a)
+	                }, a
+	            }())
+	        }, openLocation: function (a) {
+	            c("openLocation", {
+	                latitude: a.latitude,
+	                longitude: a.longitude,
+	                name: a.name || "",
+	                address: a.address || "",
+	                scale: a.scale || 28,
+	                infoUrl: a.infoUrl || ""
+	            }, a)
+	        }, getLocation: function (a) {
+	            a = a || {}, c(o.getLocation, {type: a.type || "wgs84"}, function () {
+	                return a._complete = function (a) {
+	                    delete a.type
+	                }, a
+	            }())
+	        }, hideOptionMenu: function (a) {
+	            c("hideOptionMenu", {}, a)
+	        }, showOptionMenu: function (a) {
+	            c("showOptionMenu", {}, a)
+	        }, closeWindow: function (a) {
+	            a = a || {}, c("closeWindow", {immediate_close: a.immediateClose || 0}, a)
+	        }, hideMenuItems: function (a) {
+	            c("hideMenuItems", {menuList: a.menuList}, a)
+	        }, showMenuItems: function (a) {
+	            c("showMenuItems", {menuList: a.menuList}, a)
+	        }, hideAllNonBaseMenuItem: function (a) {
+	            c("hideAllNonBaseMenuItem", {}, a)
+	        }, showAllNonBaseMenuItem: function (a) {
+	            c("showAllNonBaseMenuItem", {}, a)
+	        }, scanQRCode: function (a) {
+	            a = a || {}, c("scanQRCode", {
+	                needResult: a.needResult || 0,
+	                scanType: a.scanType || ["qrCode", "barCode"]
+	            }, function () {
+	                return a._complete = function (a) {
+	                    var b, c;
+	                    v && (b = a.resultStr, b && (c = JSON.parse(b), a.resultStr = c && c.scan_code && c.scan_code.scan_result))
+	                }, a
+	            }())
+	        }, openProductSpecificView: function (a) {
+	            c(o.openProductSpecificView, {pid: a.productId, view_type: a.viewType || 0}, a)
+	        }, addCard: function (a) {
+	            var e, f, g, h, b = a.cardList, d = [];
+	            for (e = 0, f = b.length; f > e; ++e)g = b[e], h = {card_id: g.cardId, card_ext: g.cardExt}, d.push(h);
+	            c(o.addCard, {card_list: d}, function () {
+	                return a._complete = function (a) {
+	                    var c, d, e, b = a.card_list;
+	                    if (b) {
+	                        for (b = JSON.parse(b), c = 0, d = b.length; d > c; ++c)e = b[c], e.cardId = e.card_id, e.cardExt = e.card_ext, e.isSuccess = e.is_succ ? !0 : !1, delete e.card_id, delete e.card_ext, delete e.is_succ;
+	                        a.cardList = b, delete a.card_list
+	                    }
+	                }, a
+	            }())
+	        }, chooseCard: function (a) {
+	            c("chooseCard", {
+	                app_id: z.appId,
+	                location_id: a.shopId || "",
+	                sign_type: a.signType || "SHA1",
+	                card_id: a.cardId || "",
+	                card_type: a.cardType || "",
+	                card_sign: a.cardSign,
+	                time_stamp: a.timestamp + "",
+	                nonce_str: a.nonceStr
+	            }, function () {
+	                return a._complete = function (a) {
+	                    a.cardList = a.choose_card_info, delete a.choose_card_info
+	                }, a
+	            }())
+	        }, openCard: function (a) {
+	            var e, f, g, h, b = a.cardList, d = [];
+	            for (e = 0, f = b.length; f > e; ++e)g = b[e], h = {card_id: g.cardId, code: g.code}, d.push(h);
+	            c(o.openCard, {card_list: d}, a)
+	        }, chooseWXPay: function (a) {
+	            c(o.chooseWXPay, f(a), a)
+	        }
+	    }, b && (a.wx = a.jWeixin = C), C
+	});
 
 /***/ }
 /******/ ]);

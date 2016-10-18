@@ -1,75 +1,79 @@
-@charset 'UTF-8'; // sass的入口文件
+@charset "UTF-8"; // sass的入口文件
+@import "../../node_modules/normalize.css/normalize";
 @import "./components/swiper/swiper.min";
 @import "./components/swiper/animate.min";
 @import "./swiper";
 @import "./base";
 @import "../css/iconfont/iconfont";
+@import "../../node_modules/animate.css/animate.min";
 
 /****************************
 *			变量
- *****************************/
+*****************************/
 @mixin center() {
-	position:absolute;
-	left:0;
-	top:0;
-	right:0;
-	bottom:0;
-	margin:auto;
-}
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
 
+    margin: auto;
+}
+$baseColor: #9cf;
 
 header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2;
+
+    display: flex;
     width: 100%;
     height: 55px;
-    background: #37363b;
+
     color: #fff;
-    position: absolute;
-    z-index: 2;
-    left: 0;
-    top: 0;
-    display: flex;
-    justify-content: space-between;
+    background: #37363b;
+
     align-items: center;
+    justify-content: space-between;
 }
 .container {
-    height: 100%;
-    width: 100%;
     display: flex;
     flex-flow: column;
     justify-content: center;
 }
-.swiper-container {
-    position: absolute;
-    width: 100%;
-    left: 0;
-    top: 55px;
-    height: calc(100% - 55px)!important;
-}
+
 .hide {
     display: none;
     height: 0;
 }
 .share {
     position: relative;
+
     margin-right: 20px;
     .share-list {
         position: absolute;
         top: 30px;
         right: -10px;
-        padding: 20px 0;
-        width: 160px;
+
         display: none;
-        background-color: #37363B;
+        width: 160px;
+        padding: 20px 0;
+
+        background-color: #37363b;
         .sl-item {
+            display: inline-flex;
+            padding: 6px 10px;
+
             font-size: 14px;
+
+            align-items: center;
+            flex-flow: row;
             .iconfont {
                 margin-right: 4px;
+
                 font-size: 26px;
             }
-            display: inline-flex;
-            flex-flow: row;
-            align-items: center;
-            padding: 6px 10px;
         }
     }
 }
@@ -84,73 +88,92 @@ i.iconfont {
 ****************************************/
 #preload {
     position: fixed;
-    left: 0;
     top: 0;
+    left: 0;
+    z-index: 999;
+
     width: 100%;
     height: 100%;
-    z-index: 999;
-    background: #99CCFF url('../images/3.gif') no-repeat center;
+
+    background: $baseColor url("../images/3.gif") no-repeat center;
 }
+
 /************************************
 *           技能页
 ***********************************/
-#wrapper{
-	overflow: hidden;
-	position: absolute;
-	width:100%;
-	height:100%;
-	#scroller{
-		overflow: hidden;
-		width: 100%;
-		.pullDown{
-			line-height: 60px;
-			height: 60px;
-		}
-		.pullUp{
-			height: 60px;
-			line-height: 60px;
-		}
-	}
+
+#wrapper {
+    position: absolute;
+
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    #scroller {
+        width: 100%;
+        overflow: hidden;
+
+        text-align: center;
+        .pullDown {
+            height: 60px;
+
+            line-height: 60px;
+        }
+        .pullUp {
+            height: 60px;
+
+            line-height: 60px;
+        }
+    }
 }
 
 
 .list-skill {
-	position: relative;
+    position: relative;
+
     width: 100%;
 }
 .list-skill .item {
+    position: relative;
+
+    display: flex;
     width: 100%;
     height: 90px;
-    position: relative;
-    display: flex;
+
+    align-items: center;
     flex-flow: row nowrap;
     justify-content: center;
-    align-items: center;
 }
 .list-skill .item:after {
-    content: "";
     position: absolute;
-    left: 0;
     bottom: 0;
+    left: 0;
+
     display: block;
     width: 100%;
-    border-bottom: 1px solid #333;
+
+    content: "";
     transform: scaleY(.4);
+
+    border-bottom: 1px solid #333;
 }
 .list-skill .item-circle {
     position: relative;
+
     width: 24%;
     height: 100%;
-    canvas{
-    	background-color: rbga(0,0,0,.5);
+    canvas {
         width: 80%;
         height: 80%;
-		@include center;
+
+        background-color: rbga(0,0,0,.5);
+
+        @include center;
     }
-    img{
-    	width: 35%;
-    	height: 35%;
-    	@include center;
+    img {
+        width: 35%;
+        height: 35%;
+
+        @include center;
     }
 }
 
@@ -158,20 +181,141 @@ i.iconfont {
 .list-skill .item-content {
     width: 76%;
     height: 100%;
+    padding: 4px 6px;
     text-align: left;
-    h2{
-    	font-size:18px;
-    	line-height: 28px;
+    h2 {
+        font-size: 18px;
+        line-height: 28px;
     }
-    p{
-    	font-size: 12px;
-    	line-height: 20px;
+    p {
+        font-size: 12px;
+        line-height: 20px;
+    }
+}
+
+/************************************
+*           项目页
+***********************************/
+
+.list-project {
+    width: 100%;
+    height: 100%;
+    tr {
+        line-height: 20px;
+    }
+    td {
+        padding:0 10px;
+    }
+    th {
+        height: 28px;
+
+        font-size: 20px;
+        line-height: 28px;
+    }
+    tr:nth-child(2) img {
+        height: 140px;
+        margin: 0 auto;
+    }
+    tr > td:nth-child(1) {
+        width: 30%;
+
+        font-weight: 600;
+
+        text-align: left;
+    }
+    tr:nth-child(odd) {
+        background-color: lighten($baseColor, 10%);
+    }
+    tr:nth-child(even) {
+        // background-color: orange;
     }
 }
 
 
 
+/************************************
+*           经验页
+***********************************/
+.experience {
+    width: 100%;
+  
+    > h2 {
+        height: 50px;
 
+        line-height: 50px;
 
+        text-align: center;
+    }
+    .timeline {
+        position: relative;
 
+        padding: 8px;
+        // background-color: lighten($baseColor , 10%);
+        // border:2px solid $baseColor;
+       
+        &:before {
+            position: absolute;
+            top: 8px;
+            bottom: 0;
+            left: 22%;
+            width: 6px;
+            height: 90%;
 
+            content: "";
+
+            background-color: $baseColor;
+        }
+        .timeline-item {
+            position: relative;
+            margin: 0 0 10px 0;
+            .tl-time {
+                position: absolute;
+                top: 0;
+                left: 0;
+
+                display: block;
+                width: 20%;
+                height: 30px;
+                margin-right: 5%;
+                font-size: 20px;
+                font-weight: 600;
+                line-height: 30px;
+                
+                color: $baseColor;
+                >span{
+                    font-size: 16px;
+                    display: block;
+                    text-align: center;
+                }
+            }
+
+            .tl-content {
+                position: relative;
+                top: 0;
+                right: 0;
+                padding: 1em;
+                margin: 0 0 15px 25%;
+                line-height: 1.4;
+
+                color: #333;
+                border-radius: 5px;
+                background-color: lighten($baseColor, 10%);
+                h2 {
+                    font-size: 18px;
+                }
+                &:before{
+                    content:"";
+                    position: absolute;
+                    left: -20px;
+                    top:10px;
+                    width: 0;
+                    height: 0;
+                    border-left: 10px solid transparent;
+                    border-top: 10px solid transparent;
+                    border-bottom: 10px solid transparent;
+                    border-right: 10px solid lighten($baseColor, 10%);
+                }
+            }
+        }
+    }
+}

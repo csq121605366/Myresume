@@ -1,11 +1,11 @@
-﻿[
+[
 	{
 		"category":"电商网站",
 		"name":"通威食品",
 		"url":"http://www.tongweifood.cn/",
 		"image":"images/tongwei.png",
 		"description":"通威食品是大型科技型上市公司通威股份重点打造的食品产业。",
-		"detail":"项目耗时3周，主要处理前端页面，当时并未要求移动端适配，故该网站只适应于PC端应用",
+		"detail":"项目耗时3周，主要处理前端页面,运用媒体查询的方式进行移动端的适配。",
 		"tech":"Html、Css2、js等"
 	},
 	{
@@ -23,7 +23,7 @@
 		"url":"http://www.php3w.com/index.php",
 		"images":"images/weifenxiao.png",
 		"description":"微信网上商城",
-		"detail":"项目初建耗时4月，从需求到页面设计，从页面设计到前端实现，从页面实现到功能开发和集成，从本地测试到平台上线等全程处理",
-		"tech":"Html5、Css3、Javascript、Jquery等"
+		"detail":"项目初建耗时4周，从需求到页面设计，从页面设计到前端实现，从页面实现到功能开发和集成，从本地测试到平台上线等全程处理",
+		"tech":"Html、Css3、Javascript、Jquery等"
 	}
 ]

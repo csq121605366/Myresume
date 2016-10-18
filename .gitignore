@@ -1,1 +1,6 @@
 node_modules/
+platforms/
+www/
+mock/
+hooks/
+plugins/

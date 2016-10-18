@@ -10,34 +10,20 @@
 	background-position: left;
 }
 
-.swiper-slide {
-	box-sizing: border-box;
-	text-align: center;
-	display: -webkit-box;
-	display: -ms-flexbox;
-	display: -webkit-flex;
-	display: flex;
-	-webkit-box-pack: flex-start;
-	-ms-flex-pack: flex-start;
-	-webkit-justify-content: flex-start;
-	justify-content: flex-start;
-	-webkit-box-align: flex-start;
-	-ms-flex-align: flex-start;
-	-webkit-align-items: flex-start;
-	align-items: flex-start;
+.swiper-slide{
+	height: calc(100% - 50px); 
 	overflow: hidden;
-	position: relative;
 }
 
-.swiper-pagination {
+.swiper-pagination-h{
+	position: fixed;
+	left: 0;
+	bottom: 0!important;
 	width: 100%;
 	display: flex;
+	background-color: #333;
 	flex-flow: row nowrap;
 	justify-content: space-between;
-}
-
-.swiper-container-horizontal> .swiper-pagination-bullets {
-	bottom: 0;
 }
 
 .swiper-pagination-bullet {
@@ -50,21 +36,49 @@
 	height: 50px;
 	line-height: 50px;
 	font-size: 20px;
-	color: white;
+	color: #333;
 	font-weight: 600;
 	background-color: #999!important;
 }
 
 .swiper-pagination-bullet-active {
-	background-color: #FF6666!important;
+	background-color: #F2DEDE!important;
 }
 
 .parallax-bg {
 	background: url('../images/bg.gif');
 }
 
-.swiper-pagination-v {
-	width: 10px!important;
+
+
+.swiper-container-h{
+	position: absolute;
+	width: 100%;
+	left: 0;
+	top: 55px;
+	height: calc(100% - 55px)!important;
+}
+.swiper-container-v{
+	position: absolute;
+	width: 100%;
+	left: 0;
+	top: 0;
+	height: 100%;
+}
+
+.swiper-pagination-v{
+	position: absolute;
+	right: 10px!important;
+	top: 50%!important;
+	height: 40px!important;
+	width: 8px!important;
+	background-color: red;
 	display: flex!important;
 	flex-flow: column!important;
 }
+
+
+
+
+
+

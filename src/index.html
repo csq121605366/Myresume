@@ -1,80 +1,115 @@
 <!doctype html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>个人简历</title>
-    <link href="//cdn.bootcss.com/normalize/5.0.0/normalize.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="css/index.css"/>
-    <script>
-        console.log('%c我叫蔡尚卿', 'background-image:-webkit-gradient( linear, left top, right top, color-stop(0, #f22), color-stop(0.15, #f2f), color-stop(0.3, #22f), color-stop(0.45, #2ff), color-stop(0.6, #2f2),color-stop(0.75, #2f2), color-stop(0.9, #ff2), color-stop(1, #f22) );color:transparent;-webkit-background-clip: text;font-size:3em;','有意向欢迎致电');
-    </script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>个人简历</title>
+  <link rel="stylesheet" type="text/css" href="css/index.css"/>
+  <script>
+    console.log('%c我叫蔡尚卿', 'background-image:-webkit-gradient( linear, left top, right top, color-stop(0, #f22), color-stop(0.15, #f2f), color-stop(0.3, #22f), color-stop(0.45, #2ff), color-stop(0.6, #2f2),color-stop(0.75, #2f2), color-stop(0.9, #ff2), color-stop(1, #f22) );color:transparent;-webkit-background-clip: text;font-size:3em;','有意向欢迎致电');
+  </script>
 </head>
 
 <body>
-    <!-- 预加载 -->
-    <div id="preload"></div>
-    <div class="container">
-        <!-- 头部 -->
-        <header>
-            <div class="scan">   
-               <i class="iconfont">&#xe610;</i>
-           </div>
-           <div class="hide"></div>
-           <div class="share">
-               <i class="iconfont">&#xf003a;</i>
-               <ul class="share-list">
-                  <li class="sl-item"><i class="iconfont">&#xe644;</i>分享到朋友圈</li>
-                  <li class="sl-item"><i class="iconfont">&#xe634;</i>分享到QQ</li>
-                  <li class="sl-item"><i class="iconfont">&#xe6b3;</i>分享到QQ空间</li>
-              </ul>
-          </div>
-      </header>
-      <!-- Swiper -->
-      <div class="swiper-container swiper-h">
-        <div class="swiper-wrapper">
-            <!-- 无限滚动 -->
-            <div class="swiper-slide">
-                <div id="wrapper">
-                    <div id="scroller">
-                        <div class="pullDown">
-                            <h3>要刷新了...</h3>    
-                        </div>
-                        <ul id="add" class="list-skill"> 
-
-                        </ul>
-                        <div class="pullUp">
-                            <h3>要加载了...</h3>    
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- 项目 -->
-            <div class="swiper-slide">
-               <div class="swiper-container swiper-v">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide">
-                        <h2>通威食品</h2>
-                        <p><span>类型:</span>电商网站</p>
-                        <p><span>网址:</span>http://www.tongweifood.cn/</p>
-                        <p><span>公司介绍:</span>通威食品是大型科技型上市公司通威股份重点打造的食品产业。</p>
-                        <p><span>工程介绍:</span>项目耗时3周，主要处理前端页面，当时并未要求移动端适配，故该网站只适应于PC端应用</p>
-                        <p><span>描述:</span>Html、Css2、js等</p>
-                    </div>
-                    <div class="swiper-slide">
-                        
-                    </div>
-                </div>
-                <div class="swiper-pagination swiper-pagination-v"></div>
-            </div>
-        </div>
-        <div class="swiper-slide">
-        </div>
-        <div class="swiper-slide">
-        </div>
+  <!-- 预加载 -->
+  <div id="preload"></div>
+  <div class="container">
+    <!-- 头部 -->
+    <header>
+      <div class="scan">   
+       <i class="iconfont">&#xe610;</i>
+     </div>
+     <div class="hide"></div>
+     <div class="share">
+       <i class="iconfont">&#xf003a;</i>
+       <ul class="share-list">
+        <li class="sl-item pengyou"><i class="iconfont">&#xe644;</i>分享到朋友圈</li>
+        <li class="sl-item qq"><i class="iconfont">&#xe634;</i>分享到QQ</li>
+        <li class="sl-item qqkongjian"><i class="iconfont">&#xe6b3;</i>分享到QQ空间</li>
+      </ul>
     </div>
-    <!-- Add Pagination -->
-    <div class="swiper-pagination swiper-pagination-white"></div>
+  </header>
+  <!-- Swiper -->
+  <div class="swiper-container swiper-container-h">
+    <div class="swiper-wrapper">
+      <!-- 无限滚动 -->
+      <div class="swiper-slide">
+        <div id="wrapper">
+          <div id="scroller">
+            <div class="pullDown">
+              <h3>要刷新了...</h3>    
+            </div>
+            <!-- 技能列表 -->
+            <ul id="add" class="list-skill"> 
+            </ul>
+            <!-- 技能列表-end -->
+            <div class="pullUp">
+              <h3>要加载了...</h3>    
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 项目 -->
+      <div class="swiper-slide">
+        <!-- 竖向滚动swiper -->
+        <div class="swiper-container swiper-container-v">
+          <div class="swiper-wrapper">
+           <!-- 项目列表（ajax获取数据） -->
+<!--            <div class="swiper-slide">
+            <table class="list-project">
+              <tr><th colspan="2">通威食品</th></tr>
+              <tr><td colspan="2"><img src="images/tongwei.png"></td></tr>
+              <tr><td>类型:</td><td>电商网站</td></tr>
+              <tr><td>网址:</td><td>http://www.tongweifood.cn/</td></tr>
+              <tr><td>公司介绍:</td><td>通威食品是大型科技型上市公司通威股份重点打造的食品产业。</td></tr>
+              <tr><td>工程介绍:</td><td>项目耗时3周，主要处理前端页面，当时并未要求移动端适配，故该网站只适应于PC端应用</td></tr>
+              <tr><td>描述:</td><td>Html、Css2、js等</td></tr>
+            </table>
+          </div> -->
+          <!-- 项目列表-end -->
+        </div>
+        <div class="swiper-pagination swiper-pagination-v"></div>
+      </div>
+      <!-- 竖向滚动swiper-end -->
+    </div>
+    <!-- 经验 -->
+    <div class="swiper-slide scroll-wrap">
+      <div class="experience">
+        <h2>My Experience</h2>
+        <ul class="timeline">
+         <!--  <li class="timeline-item">
+          <time class="tl-time">
+              <span class="year">2016年4月</span>
+              <span class="month">2017年4月</span>
+            </time>
+            <div class="tl-icon"></div>
+            <div class="tl-content">
+              <h2>郑州零一科技有限公司</h2>
+              <p><img src="images/lingyi.png" alt=""></p>
+              <p>前端工程师</p>
+            </div>
+          </li> -->
+        </ul>
+      </div>
+    </div>
+    <!-- 关于我 -->
+    <div class="swiper-slide about-me">
+          <!-- 头部 -->
+          <div class="list-me-header">
+            <img src="images/1.gif">
+            <p class="myname">蔡尚卿</p>
+            <p class="myhome">河南鹤壁</p>
+            <button class="followme"></button>
+          </div>
+          <!-- 基本信息 性格 游戏-->
+          <div class="list-me-content">
+              
+          </div>
+  </div>
+  <!-- 关于我-end -->
+</div>
+<!-- Add Pagination -->
+<div class="swiper-pagination swiper-pagination-h"></div>
 </div>
 </div>
 <!--<script src="//cdn.bootcss.com/jquery/1.12.1/jquery.min.js"></script>-->

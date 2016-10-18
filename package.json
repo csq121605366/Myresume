@@ -16,9 +16,11 @@
     "lodash": "^4.16.4",
     "lodash._htmlescapes": "^2.4.1",
     "lodash._objecttypes": "^2.4.1",
+    "normalize.css": "^5.0.0",
     "vinyl-named": "^1.1.0"
   },
   "dependencies": {
+    "animate.css": "^3.5.2",
     "zepto-modules": "^1.0.1"
   }
 }
